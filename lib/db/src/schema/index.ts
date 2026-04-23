@@ -6,7 +6,15 @@ import {
   timestamp,
   uuid,
   index,
+  jsonb,
 } from "drizzle-orm/pg-core";
+
+export type AvailabilityDay = {
+  weekday: number;
+  enabled: boolean;
+  startHour: number;
+  endHour: number;
+};
 
 export const profiles = pgTable("profiles", {
   // Clerk user id
@@ -16,6 +24,7 @@ export const profiles = pgTable("profiles", {
   language: text("language").notNull().default("en"), // en | hi
   specialty: text("specialty"),
   village: text("village"),
+  availability: jsonb("availability").$type<AvailabilityDay[]>(),
   createdAt: timestamp("created_at", { withTimezone: true })
     .notNull()
     .defaultNow(),

@@ -52,6 +52,30 @@ export interface Slot {
   available: boolean;
 }
 
+export interface AvailabilityDay {
+  /**
+   * 0=Sunday ... 6=Saturday
+   * @minimum 0
+   * @maximum 6
+   */
+  weekday: number;
+  enabled: boolean;
+  /**
+   * @minimum 0
+   * @maximum 23
+   */
+  startHour: number;
+  /**
+   * @minimum 1
+   * @maximum 24
+   */
+  endHour: number;
+}
+
+export interface DoctorAvailability {
+  days: AvailabilityDay[];
+}
+
 export type AppointmentStatus =
   (typeof AppointmentStatus)[keyof typeof AppointmentStatus];
 

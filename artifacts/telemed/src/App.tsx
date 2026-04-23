@@ -30,6 +30,7 @@ import SymptomChecker from "./pages/patient/symptoms";
 import EmergencyPage from "./pages/patient/emergency";
 import DoctorDashboard from "./pages/doctor/dashboard";
 import DoctorAppointments from "./pages/doctor/appointments";
+import DoctorAvailability from "./pages/doctor/availability";
 import PatientRecords from "./pages/doctor/patient-records";
 import ChatList from "./pages/chat/list";
 import ChatThread from "./pages/chat/thread";
@@ -191,6 +192,13 @@ function Routes() {
         <RoleGate role="doctor">
           <AppShell>
             <DoctorAppointments />
+          </AppShell>
+        </RoleGate>
+      </Route>
+      <Route path="/doctor/availability">
+        <RoleGate role="doctor">
+          <AppShell>
+            <DoctorAvailability />
           </AppShell>
         </RoleGate>
       </Route>

@@ -23,6 +23,7 @@ import type {
   ChatMessage,
   ChatThread,
   Doctor,
+  DoctorAvailability,
   Document,
   EmergencyAlert,
   EmergencyBody,
@@ -354,6 +355,167 @@ export function useListDoctors<
 
   return { ...query, queryKey: queryOptions.queryKey };
 }
+
+/**
+ * @summary Get the signed-in doctor's weekly availability
+ */
+export const getGetMyAvailabilityUrl = () => {
+  return `/api/doctor/me/availability`;
+};
+
+export const getMyAvailability = async (
+  options?: RequestInit,
+): Promise<DoctorAvailability> => {
+  return customFetch<DoctorAvailability>(getGetMyAvailabilityUrl(), {
+    ...options,
+    method: "GET",
+  });
+};
+
+export const getGetMyAvailabilityQueryKey = () => {
+  return [`/api/doctor/me/availability`] as const;
+};
+
+export const getGetMyAvailabilityQueryOptions = <
+  TData = Awaited<ReturnType<typeof getMyAvailability>>,
+  TError = ErrorType<unknown>,
+>(options?: {
+  query?: UseQueryOptions<
+    Awaited<ReturnType<typeof getMyAvailability>>,
+    TError,
+    TData
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {};
+
+  const queryKey = queryOptions?.queryKey ?? getGetMyAvailabilityQueryKey();
+
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof getMyAvailability>>
+  > = ({ signal }) => getMyAvailability({ signal, ...requestOptions });
+
+  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
+    Awaited<ReturnType<typeof getMyAvailability>>,
+    TError,
+    TData
+  > & { queryKey: QueryKey };
+};
+
+export type GetMyAvailabilityQueryResult = NonNullable<
+  Awaited<ReturnType<typeof getMyAvailability>>
+>;
+export type GetMyAvailabilityQueryError = ErrorType<unknown>;
+
+/**
+ * @summary Get the signed-in doctor's weekly availability
+ */
+
+export function useGetMyAvailability<
+  TData = Awaited<ReturnType<typeof getMyAvailability>>,
+  TError = ErrorType<unknown>,
+>(options?: {
+  query?: UseQueryOptions<
+    Awaited<ReturnType<typeof getMyAvailability>>,
+    TError,
+    TData
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}): UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+  const queryOptions = getGetMyAvailabilityQueryOptions(options);
+
+  const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & {
+    queryKey: QueryKey;
+  };
+
+  return { ...query, queryKey: queryOptions.queryKey };
+}
+
+/**
+ * @summary Update the signed-in doctor's weekly availability
+ */
+export const getUpdateMyAvailabilityUrl = () => {
+  return `/api/doctor/me/availability`;
+};
+
+export const updateMyAvailability = async (
+  doctorAvailability: DoctorAvailability,
+  options?: RequestInit,
+): Promise<DoctorAvailability> => {
+  return customFetch<DoctorAvailability>(getUpdateMyAvailabilityUrl(), {
+    ...options,
+    method: "PUT",
+    headers: { "Content-Type": "application/json", ...options?.headers },
+    body: JSON.stringify(doctorAvailability),
+  });
+};
+
+export const getUpdateMyAvailabilityMutationOptions = <
+  TError = ErrorType<unknown>,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof updateMyAvailability>>,
+    TError,
+    { data: BodyType<DoctorAvailability> },
+    TContext
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof updateMyAvailability>>,
+  TError,
+  { data: BodyType<DoctorAvailability> },
+  TContext
+> => {
+  const mutationKey = ["updateMyAvailability"];
+  const { mutation: mutationOptions, request: requestOptions } = options
+    ? options.mutation &&
+      "mutationKey" in options.mutation &&
+      options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey }, request: undefined };
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof updateMyAvailability>>,
+    { data: BodyType<DoctorAvailability> }
+  > = (props) => {
+    const { data } = props ?? {};
+
+    return updateMyAvailability(data, requestOptions);
+  };
+
+  return { mutationFn, ...mutationOptions };
+};
+
+export type UpdateMyAvailabilityMutationResult = NonNullable<
+  Awaited<ReturnType<typeof updateMyAvailability>>
+>;
+export type UpdateMyAvailabilityMutationBody = BodyType<DoctorAvailability>;
+export type UpdateMyAvailabilityMutationError = ErrorType<unknown>;
+
+/**
+ * @summary Update the signed-in doctor's weekly availability
+ */
+export const useUpdateMyAvailability = <
+  TError = ErrorType<unknown>,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof updateMyAvailability>>,
+    TError,
+    { data: BodyType<DoctorAvailability> },
+    TContext
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}): UseMutationResult<
+  Awaited<ReturnType<typeof updateMyAvailability>>,
+  TError,
+  { data: BodyType<DoctorAvailability> },
+  TContext
+> => {
+  return useMutation(getUpdateMyAvailabilityMutationOptions(options));
+};
 
 /**
  * @summary List a doctor's available appointment slots for the next 14 days

@@ -68,6 +68,7 @@ export function AppHeader() {
       ? [
           { to: "/doctor", label: t("nav.dashboard") },
           { to: "/doctor/appointments", label: t("nav.appointments") },
+          { to: "/doctor/availability", label: t("nav.availability") },
           { to: "/chat", label: t("nav.chat") },
         ]
       : [];

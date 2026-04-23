@@ -57,6 +57,99 @@ export const ListDoctorsResponseItem = zod.object({
 export const ListDoctorsResponse = zod.array(ListDoctorsResponseItem);
 
 /**
+ * @summary Get the signed-in doctor's weekly availability
+ */
+export const getMyAvailabilityResponseDaysItemWeekdayMin = 0;
+export const getMyAvailabilityResponseDaysItemWeekdayMax = 6;
+
+export const getMyAvailabilityResponseDaysItemStartHourMin = 0;
+export const getMyAvailabilityResponseDaysItemStartHourMax = 23;
+
+export const getMyAvailabilityResponseDaysItemEndHourMax = 24;
+
+export const GetMyAvailabilityResponse = zod.object({
+  days: zod.array(
+    zod.object({
+      weekday: zod
+        .number()
+        .min(getMyAvailabilityResponseDaysItemWeekdayMin)
+        .max(getMyAvailabilityResponseDaysItemWeekdayMax)
+        .describe("0=Sunday ... 6=Saturday"),
+      enabled: zod.boolean(),
+      startHour: zod
+        .number()
+        .min(getMyAvailabilityResponseDaysItemStartHourMin)
+        .max(getMyAvailabilityResponseDaysItemStartHourMax),
+      endHour: zod
+        .number()
+        .min(1)
+        .max(getMyAvailabilityResponseDaysItemEndHourMax),
+    }),
+  ),
+});
+
+/**
+ * @summary Update the signed-in doctor's weekly availability
+ */
+export const updateMyAvailabilityBodyDaysItemWeekdayMin = 0;
+export const updateMyAvailabilityBodyDaysItemWeekdayMax = 6;
+
+export const updateMyAvailabilityBodyDaysItemStartHourMin = 0;
+export const updateMyAvailabilityBodyDaysItemStartHourMax = 23;
+
+export const updateMyAvailabilityBodyDaysItemEndHourMax = 24;
+
+export const UpdateMyAvailabilityBody = zod.object({
+  days: zod.array(
+    zod.object({
+      weekday: zod
+        .number()
+        .min(updateMyAvailabilityBodyDaysItemWeekdayMin)
+        .max(updateMyAvailabilityBodyDaysItemWeekdayMax)
+        .describe("0=Sunday ... 6=Saturday"),
+      enabled: zod.boolean(),
+      startHour: zod
+        .number()
+        .min(updateMyAvailabilityBodyDaysItemStartHourMin)
+        .max(updateMyAvailabilityBodyDaysItemStartHourMax),
+      endHour: zod
+        .number()
+        .min(1)
+        .max(updateMyAvailabilityBodyDaysItemEndHourMax),
+    }),
+  ),
+});
+
+export const updateMyAvailabilityResponseDaysItemWeekdayMin = 0;
+export const updateMyAvailabilityResponseDaysItemWeekdayMax = 6;
+
+export const updateMyAvailabilityResponseDaysItemStartHourMin = 0;
+export const updateMyAvailabilityResponseDaysItemStartHourMax = 23;
+
+export const updateMyAvailabilityResponseDaysItemEndHourMax = 24;
+
+export const UpdateMyAvailabilityResponse = zod.object({
+  days: zod.array(
+    zod.object({
+      weekday: zod
+        .number()
+        .min(updateMyAvailabilityResponseDaysItemWeekdayMin)
+        .max(updateMyAvailabilityResponseDaysItemWeekdayMax)
+        .describe("0=Sunday ... 6=Saturday"),
+      enabled: zod.boolean(),
+      startHour: zod
+        .number()
+        .min(updateMyAvailabilityResponseDaysItemStartHourMin)
+        .max(updateMyAvailabilityResponseDaysItemStartHourMax),
+      endHour: zod
+        .number()
+        .min(1)
+        .max(updateMyAvailabilityResponseDaysItemEndHourMax),
+    }),
+  ),
+});
+
+/**
  * @summary List a doctor's available appointment slots for the next 14 days
  */
 export const ListDoctorSlotsParams = zod.object({

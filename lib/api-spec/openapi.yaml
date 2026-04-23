@@ -75,6 +75,36 @@ paths:
                 items:
                   $ref: "#/components/schemas/Doctor"
 
+  /doctor/me/availability:
+    get:
+      operationId: getMyAvailability
+      tags: [doctors]
+      summary: Get the signed-in doctor's weekly availability
+      responses:
+        "200":
+          description: Availability
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DoctorAvailability"
+    put:
+      operationId: updateMyAvailability
+      tags: [doctors]
+      summary: Update the signed-in doctor's weekly availability
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/DoctorAvailability"
+      responses:
+        "200":
+          description: Updated availability
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DoctorAvailability"
+
   /doctors/{doctorId}/slots:
     get:
       operationId: listDoctorSlots
@@ -407,6 +437,24 @@ components:
       properties:
         startsAt: { type: string, format: date-time }
         available: { type: boolean }
+
+    AvailabilityDay:
+      type: object
+      required: [weekday, enabled, startHour, endHour]
+      properties:
+        weekday: { type: integer, minimum: 0, maximum: 6, description: "0=Sunday ... 6=Saturday" }
+        enabled: { type: boolean }
+        startHour: { type: integer, minimum: 0, maximum: 23 }
+        endHour: { type: integer, minimum: 1, maximum: 24 }
+
+    DoctorAvailability:
+      type: object
+      required: [days]
+      properties:
+        days:
+          type: array
+          items:
+            $ref: "#/components/schemas/AvailabilityDay"
 
     AppointmentStatus:
       type: string
