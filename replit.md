@@ -1,27 +1,36 @@
-# Workspace
+# GramCare — Rural Telemedicine Portal
 
-## Overview
+Low-bandwidth full-stack web app connecting rural Indian patients with doctors.
 
-pnpm workspace monorepo using TypeScript. Each package manages its own dependencies.
+## Artifacts
+- `artifacts/telemed` — React + Vite web app (patient + doctor portal)
+- `artifacts/api-server` — Express 5 API server (Postgres via Drizzle, Clerk auth)
+- `lib/api-spec` — OpenAPI 3 contract (source of truth)
+- `lib/api-client-react` — Orval-generated React Query client
 
-## Stack
+## Features
+- Patient portal: browse doctors, book appointment slots, track appointments, upload compressed documents (images auto-resized client-side), rule-based symptom checker, one-tap emergency alert
+- Doctor portal: accept/reject pending requests, view today's schedule, active emergencies feed, per-patient records (documents)
+- Chat (polling every 4s) with offline queue in `localStorage`
+- Notifications bell with unread count, auto-clears on mark-all-read
+- Bilingual (EN / HI) toggle, persisted per-user in profile
+- Offline banner, warm terracotta theme, large tappable buttons
 
-- **Monorepo tool**: pnpm workspaces
-- **Node.js version**: 24
-- **Package manager**: pnpm
-- **TypeScript version**: 5.9
-- **API framework**: Express 5
-- **Database**: PostgreSQL + Drizzle ORM
-- **Validation**: Zod (`zod/v4`), `drizzle-zod`
-- **API codegen**: Orval (from OpenAPI spec)
-- **Build**: esbuild (CJS bundle)
+## Conventions
+- Auth: Clerk proxy + `clerkMiddleware`; client imports from `@clerk/react`
+- API query hooks require explicit `queryKey` when passing `query` options — import `getXxxQueryKey()` from `@workspace/api-client-react`
+- Mutations: `.mutateAsync({ data: {...} })` or `({ paramName, data })`
+- `startsAt` body fields are serialized as ISO strings (`.toISOString()`)
+- Images compressed via `lib/compress-image.ts` before upload (max 1280px, JPEG q=0.7)
 
-## Key Commands
+## Theme
+- Primary: `hsl(17 56% 45%)` terracotta
+- Background: cream `hsl(45 33% 97%)`
+- Font: Plus Jakarta Sans
+- Radius: `0.75rem`
 
-- `pnpm run typecheck` — full typecheck across all packages
-- `pnpm run build` — typecheck + build all packages
-- `pnpm --filter @workspace/api-spec run codegen` — regenerate API hooks and Zod schemas from OpenAPI spec
-- `pnpm --filter @workspace/db run push` — push DB schema changes (dev only)
-- `pnpm --filter @workspace/api-server run dev` — run API server locally
-
-See the `pnpm-workspace` skill for workspace structure, TypeScript setup, and package details.
+## Running
+Workflows auto-managed:
+- `artifacts/api-server: API Server`
+- `artifacts/telemed: web`
+- `artifacts/mockup-sandbox: Component Preview Server`

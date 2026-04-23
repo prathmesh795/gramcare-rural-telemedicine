@@ -1,22 +1,27 @@
 openapi: 3.1.0
 info:
-  # Do not change the title, if the title changes, the import paths will be broken
   title: Api
   version: 0.1.0
-  description: API specification
+  description: Rural Telemedicine Portal API
 servers:
   - url: /api
     description: Base API path
 tags:
   - name: health
-    description: Health operations
+  - name: profile
+  - name: doctors
+  - name: appointments
+  - name: chat
+  - name: documents
+  - name: symptoms
+  - name: emergency
+  - name: notifications
 paths:
   /healthz:
     get:
       operationId: healthCheck
       tags: [health]
       summary: Health check
-      description: Returns server health status
       responses:
         "200":
           description: Healthy
@@ -24,13 +29,540 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/HealthStatus"
+
+  /me:
+    get:
+      operationId: getMyProfile
+      tags: [profile]
+      summary: Get the current user's profile (creates one with default role on first call)
+      responses:
+        "200":
+          description: Profile
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Profile"
+    patch:
+      operationId: updateMyProfile
+      tags: [profile]
+      summary: Update the current user's profile (set role, name, language, specialty)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateProfileBody"
+      responses:
+        "200":
+          description: Updated profile
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Profile"
+
+  /doctors:
+    get:
+      operationId: listDoctors
+      tags: [doctors]
+      summary: List all doctors
+      responses:
+        "200":
+          description: Doctors
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Doctor"
+
+  /doctors/{doctorId}/slots:
+    get:
+      operationId: listDoctorSlots
+      tags: [doctors]
+      summary: List a doctor's available appointment slots for the next 14 days
+      parameters:
+        - in: path
+          name: doctorId
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Slots
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Slot"
+
+  /appointments:
+    get:
+      operationId: listAppointments
+      tags: [appointments]
+      summary: List appointments for the current user (patient or doctor)
+      responses:
+        "200":
+          description: Appointments
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Appointment"
+    post:
+      operationId: createAppointment
+      tags: [appointments]
+      summary: Patient creates an appointment request
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/NewAppointmentInput"
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Appointment"
+
+  /appointments/{appointmentId}/status:
+    patch:
+      operationId: updateAppointmentStatus
+      tags: [appointments]
+      summary: Doctor accepts or rejects an appointment
+      parameters:
+        - in: path
+          name: appointmentId
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AppointmentStatusUpdate"
+      responses:
+        "200":
+          description: Updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Appointment"
+
+  /appointments/summary:
+    get:
+      operationId: getAppointmentSummary
+      tags: [appointments]
+      summary: Dashboard counts (upcoming, pending, completed)
+      responses:
+        "200":
+          description: Summary
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AppointmentSummary"
+
+  /chat/threads:
+    get:
+      operationId: listChatThreads
+      tags: [chat]
+      summary: List chat threads for the current user
+      responses:
+        "200":
+          description: Threads
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ChatThread"
+
+  /chat/threads/{otherUserId}/messages:
+    get:
+      operationId: listChatMessages
+      tags: [chat]
+      summary: List messages between current user and otherUserId
+      parameters:
+        - in: path
+          name: otherUserId
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Messages
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ChatMessage"
+    post:
+      operationId: sendChatMessage
+      tags: [chat]
+      summary: Send a chat message to otherUserId
+      parameters:
+        - in: path
+          name: otherUserId
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/NewChatMessageInput"
+      responses:
+        "201":
+          description: Sent
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ChatMessage"
+
+  /documents:
+    get:
+      operationId: listDocuments
+      tags: [documents]
+      summary: List documents for the current user (patient sees own, doctor sees patients')
+      parameters:
+        - in: query
+          name: patientId
+          required: false
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Documents
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Document"
+    post:
+      operationId: uploadDocument
+      tags: [documents]
+      summary: Patient uploads a medical document (base64-encoded; images compressed client-side)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/NewDocumentInput"
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Document"
+
+  /symptoms/check:
+    post:
+      operationId: checkSymptoms
+      tags: [symptoms]
+      summary: Run rule-based symptom checker
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SymptomCheckBody"
+      responses:
+        "200":
+          description: Suggestions
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SymptomCheckResult"
+
+  /emergency:
+    post:
+      operationId: triggerEmergency
+      tags: [emergency]
+      summary: Patient triggers emergency notification to all doctors
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/EmergencyBody"
+      responses:
+        "201":
+          description: Emergency recorded
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/EmergencyAlert"
+
+  /emergency/active:
+    get:
+      operationId: listActiveEmergencies
+      tags: [emergency]
+      summary: List unresolved emergencies (doctor-only)
+      responses:
+        "200":
+          description: Active emergencies
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/EmergencyAlert"
+
+  /emergency/{emergencyId}/resolve:
+    post:
+      operationId: resolveEmergency
+      tags: [emergency]
+      summary: Doctor marks an emergency resolved
+      parameters:
+        - in: path
+          name: emergencyId
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Resolved
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/EmergencyAlert"
+
+  /notifications:
+    get:
+      operationId: listNotifications
+      tags: [notifications]
+      summary: List notifications for current user
+      responses:
+        "200":
+          description: Notifications
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Notification"
+    delete:
+      operationId: clearNotifications
+      tags: [notifications]
+      summary: Mark all notifications as read
+      responses:
+        "204":
+          description: Cleared
+
 components:
   schemas:
     HealthStatus:
       type: object
+      required: [status]
       properties:
-        status:
-          type: string
-      required:
-        - status
+        status: { type: string }
 
+    Role:
+      type: string
+      enum: [patient, doctor, unset]
+
+    Language:
+      type: string
+      enum: [en, hi]
+
+    Profile:
+      type: object
+      required: [id, role, language, name]
+      properties:
+        id: { type: string }
+        role: { $ref: "#/components/schemas/Role" }
+        name: { type: string }
+        language: { $ref: "#/components/schemas/Language" }
+        specialty: { type: string, nullable: true }
+        village: { type: string, nullable: true }
+
+    UpdateProfileBody:
+      type: object
+      properties:
+        role: { $ref: "#/components/schemas/Role" }
+        name: { type: string }
+        language: { $ref: "#/components/schemas/Language" }
+        specialty: { type: string, nullable: true }
+        village: { type: string, nullable: true }
+
+    Doctor:
+      type: object
+      required: [id, name, specialty]
+      properties:
+        id: { type: string }
+        name: { type: string }
+        specialty: { type: string }
+
+    Slot:
+      type: object
+      required: [startsAt, available]
+      properties:
+        startsAt: { type: string, format: date-time }
+        available: { type: boolean }
+
+    AppointmentStatus:
+      type: string
+      enum: [pending, accepted, rejected, completed, cancelled]
+
+    Appointment:
+      type: object
+      required: [id, doctorId, patientId, doctorName, patientName, startsAt, status, reason, createdAt]
+      properties:
+        id: { type: string }
+        doctorId: { type: string }
+        patientId: { type: string }
+        doctorName: { type: string }
+        patientName: { type: string }
+        doctorSpecialty: { type: string, nullable: true }
+        startsAt: { type: string, format: date-time }
+        status: { $ref: "#/components/schemas/AppointmentStatus" }
+        reason: { type: string }
+        createdAt: { type: string, format: date-time }
+
+    NewAppointmentInput:
+      type: object
+      required: [doctorId, startsAt, reason]
+      properties:
+        doctorId: { type: string }
+        startsAt: { type: string, format: date-time }
+        reason: { type: string }
+
+    AppointmentStatusUpdate:
+      type: object
+      required: [status]
+      properties:
+        status: { $ref: "#/components/schemas/AppointmentStatus" }
+
+    AppointmentSummary:
+      type: object
+      required: [upcoming, pending, completed, total]
+      properties:
+        upcoming: { type: integer }
+        pending: { type: integer }
+        completed: { type: integer }
+        total: { type: integer }
+
+    ChatThread:
+      type: object
+      required: [otherUserId, otherUserName, otherUserRole, lastMessage, lastMessageAt, unreadCount]
+      properties:
+        otherUserId: { type: string }
+        otherUserName: { type: string }
+        otherUserRole: { $ref: "#/components/schemas/Role" }
+        lastMessage: { type: string }
+        lastMessageAt: { type: string, format: date-time }
+        unreadCount: { type: integer }
+
+    ChatMessage:
+      type: object
+      required: [id, senderId, recipientId, body, createdAt]
+      properties:
+        id: { type: string }
+        senderId: { type: string }
+        recipientId: { type: string }
+        body: { type: string }
+        createdAt: { type: string, format: date-time }
+
+    NewChatMessageInput:
+      type: object
+      required: [body]
+      properties:
+        body: { type: string, minLength: 1 }
+        clientId: { type: string, nullable: true }
+
+    Document:
+      type: object
+      required: [id, patientId, patientName, name, mimeType, sizeBytes, dataUrl, createdAt]
+      properties:
+        id: { type: string }
+        patientId: { type: string }
+        patientName: { type: string }
+        name: { type: string }
+        mimeType: { type: string }
+        sizeBytes: { type: integer }
+        dataUrl: { type: string }
+        note: { type: string, nullable: true }
+        createdAt: { type: string, format: date-time }
+
+    NewDocumentInput:
+      type: object
+      required: [name, mimeType, dataUrl]
+      properties:
+        name: { type: string }
+        mimeType: { type: string }
+        dataUrl:
+          type: string
+          description: Data URL (data:<mime>;base64,...)
+        note: { type: string, nullable: true }
+
+    SymptomCheckBody:
+      type: object
+      required: [symptoms]
+      properties:
+        symptoms:
+          type: array
+          items: { type: string }
+        ageBand:
+          type: string
+          enum: [child, adult, senior]
+          nullable: true
+
+    SymptomCondition:
+      type: object
+      required: [name, confidence, advice]
+      properties:
+        name: { type: string }
+        confidence: { type: integer, description: "0-100" }
+        advice: { type: string }
+
+    SymptomCheckResult:
+      type: object
+      required: [conditions, urgency, disclaimer]
+      properties:
+        conditions:
+          type: array
+          items: { $ref: "#/components/schemas/SymptomCondition" }
+        urgency:
+          type: string
+          enum: [low, moderate, high, emergency]
+        disclaimer: { type: string }
+
+    EmergencyBody:
+      type: object
+      properties:
+        note: { type: string, nullable: true }
+
+    EmergencyAlert:
+      type: object
+      required: [id, patientId, patientName, createdAt, resolved]
+      properties:
+        id: { type: string }
+        patientId: { type: string }
+        patientName: { type: string }
+        village: { type: string, nullable: true }
+        note: { type: string, nullable: true }
+        createdAt: { type: string, format: date-time }
+        resolved: { type: boolean }
+        resolvedAt: { type: string, format: date-time, nullable: true }
+
+    Notification:
+      type: object
+      required: [id, kind, title, body, read, createdAt]
+      properties:
+        id: { type: string }
+        kind:
+          type: string
+          enum: [chat, appointment, emergency, system]
+        title: { type: string }
+        body: { type: string }
+        link: { type: string, nullable: true }
+        read: { type: boolean }
+        createdAt: { type: string, format: date-time }

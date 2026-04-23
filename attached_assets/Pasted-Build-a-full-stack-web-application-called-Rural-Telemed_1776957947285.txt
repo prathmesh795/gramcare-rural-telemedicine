@@ -1,0 +1,84 @@
+Build a full-stack web application called **“Rural Telemedicine Portal”** optimized for low-bandwidth users.
+
+Tech Stack:
+
+* Frontend: HTML, CSS, JavaScript (or React if needed)
+* Backend: Node.js with Express
+* Database: MongoDB (or Replit DB if easier)
+* Real-time: Socket.io for chat
+* Make it deployable on Replit
+
+Core Requirements:
+
+1. Authentication:
+
+* Create login/signup system for two roles: Doctor and Patient
+* Store user data securely
+
+2. Patient Features:
+
+* Book appointments (date & time slot system)
+* View upcoming and past appointments
+* Chat with doctor (real-time text-based)
+* Upload medical documents (images/PDF)
+* View uploaded documents history
+
+3. Doctor Features:
+
+* Dashboard to view all appointments
+* Accept/reject appointment requests
+* Chat with patients
+* View patient medical records
+
+4. Chat System:
+
+* Real-time messaging using Socket.io
+* Show timestamps
+* Store chat history in database
+
+5. Low Bandwidth Optimization:
+
+* Keep UI minimal and lightweight
+* Compress uploaded images before storing
+* Avoid heavy libraries
+
+6. AI Symptom Assistant (simple logic-based):
+
+* Add a form where patient selects symptoms (fever, cough, headache, etc.)
+* Based on inputs, suggest possible conditions using predefined logic
+* Display disclaimer: “This is not a medical diagnosis”
+
+7. Offline Support (basic):
+
+* Use localStorage or IndexedDB to temporarily store data (messages or bookings)
+* Sync when connection is restored
+
+8. UI/UX:
+
+* Fully responsive design
+* Simple layout with large buttons
+* Add language toggle (English/Hindi basic support)
+
+9. Project Structure:
+
+* Separate frontend and backend folders
+* Clean modular code (routes, controllers, models)
+
+10. Bonus:
+
+* Add “Emergency Button” to notify doctor instantly
+* Notification system for new messages/appointments
+
+Output Requirements:
+
+* Generate complete working code
+* Include README with setup instructions
+* Include comments in code for clarity
+
+Focus on:
+
+* Clean code
+* Simplicity
+* Hackathon-ready MVP (not overcomplicated)
+
+Also create sample dummy data for testing.
