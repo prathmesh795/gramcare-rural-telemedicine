@@ -16,12 +16,13 @@ import { toast } from "sonner";
 import { format, formatDistanceToNow } from "date-fns";
 import { useTranslation } from "@/lib/i18n";
 import { Link } from "wouter";
+import { DashboardSkeleton } from "@/components/layout/dashboard-skeleton";
 
 export default function DoctorDashboard() {
   const { t } = useTranslation();
   const qc = useQueryClient();
-  const { data: summary } = useGetAppointmentSummary();
-  const { data: appointments = [] } = useListAppointments();
+  const { data: summary, isLoading: loadingSummary } = useGetAppointmentSummary();
+  const { data: appointments = [], isLoading: loadingAppts } = useListAppointments();
   const { data: emergencies = [] } = useListActiveEmergencies({
     query: {
       refetchInterval: 10_000,
@@ -30,6 +31,10 @@ export default function DoctorDashboard() {
   });
   const update = useUpdateAppointmentStatus();
   const resolve = useResolveEmergency();
+
+  if (loadingSummary || loadingAppts) {
+    return <DashboardSkeleton />;
+  }
 
   const pending = appointments.filter((a) => a.status === "pending");
   const now = new Date();

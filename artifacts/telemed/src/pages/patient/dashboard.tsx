@@ -6,11 +6,16 @@ import {
 import { Calendar, FileText, MessageCircle, Siren, Stethoscope, PlusCircle } from "lucide-react";
 import { useTranslation } from "@/lib/i18n";
 import { format } from "date-fns";
+import { DashboardSkeleton } from "@/components/layout/dashboard-skeleton";
 
 export default function PatientDashboard() {
   const { t } = useTranslation();
-  const { data: summary } = useGetAppointmentSummary();
-  const { data: appointments = [] } = useListAppointments();
+  const { data: summary, isLoading: loadingSummary } = useGetAppointmentSummary();
+  const { data: appointments = [], isLoading: loadingAppts } = useListAppointments();
+
+  if (loadingSummary || loadingAppts) {
+    return <DashboardSkeleton />;
+  }
 
   const upcoming = appointments
     .filter(

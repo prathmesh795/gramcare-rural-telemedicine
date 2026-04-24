@@ -15,6 +15,14 @@ Low-bandwidth full-stack web app connecting rural Indian patients with doctors.
 - Notifications bell with unread count, auto-clears on mark-all-read
 - Bilingual (EN / HI) toggle, persisted per-user in profile
 - Offline banner, warm terracotta theme, large tappable buttons
+- Doctor weekly availability editor (used by patient slot picker)
+- Demo Mode: one-tap "Try Live Demo" auto-logs in as a preloaded patient (Ramesh Kumar) or doctor (Dr. Sharma), with seeded appointments, chat history, and documents. Switchable from the in-app banner.
+- Mobile bottom navigation, dashboard skeleton loaders, 3-step onboarding screen on first demo entry
+
+## Demo Mode
+- Backend: `lib/demo.ts` seeds idempotent dummy users/appointments/messages/documents on server start. Routes at `POST /api/demo/login`, `POST /api/demo/logout`, `GET /api/demo/me` set/clear an httpOnly `demo_uid` cookie. `requireAuth` accepts the demo cookie before falling back to Clerk.
+- Frontend: `lib/demo.ts` exposes `useDemo()` (active, role, start, stop, switchRole). `RoleGate`/`SignedInOnly` bypass Clerk when demo is active.
+- Demo IDs: `demo_patient_001`, `demo_doctor_001`, `demo_doctor_002`.
 
 ## Conventions
 - Auth: Clerk proxy + `clerkMiddleware`; client imports from `@clerk/react`

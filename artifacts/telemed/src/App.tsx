@@ -37,6 +37,8 @@ import ChatThread from "./pages/chat/thread";
 import NotFound from "./pages/not-found";
 import { RoleGate, SignedInOnly } from "./components/layout/role-gate";
 import { useGetMyProfile } from "@workspace/api-client-react";
+import { useDemo } from "./lib/demo";
+import Onboarding from "./pages/onboarding";
 
 const clerkPubKey = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY;
 const clerkProxyUrl = import.meta.env.VITE_CLERK_PROXY_URL;
@@ -103,6 +105,10 @@ function ClerkQueryClientCacheInvalidator() {
 }
 
 function HomeRedirect() {
+  const demo = useDemo();
+  if (demo.active) {
+    return <Redirect to={demo.role === "doctor" ? "/doctor" : "/patient"} />;
+  }
   return (
     <>
       <Show when="signed-in">
@@ -137,6 +143,7 @@ function Routes() {
       <Route path="/sign-in/*?" component={SignInPage} />
       <Route path="/sign-up/*?" component={SignUpPage} />
       <Route path="/role-select" component={RoleSelect} />
+      <Route path="/onboarding" component={Onboarding} />
 
       <Route path="/patient">
         <RoleGate role="patient">

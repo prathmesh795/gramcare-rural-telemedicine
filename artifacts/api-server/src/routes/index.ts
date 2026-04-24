@@ -8,10 +8,12 @@ import documentsRouter from "./documents";
 import symptomsRouter from "./symptoms";
 import emergencyRouter from "./emergency";
 import notificationsRouter from "./notifications";
+import demoRouter from "./demo";
 
 const router: IRouter = Router();
 
 router.use(healthRouter);
+router.use(demoRouter);
 router.use(profileRouter);
 router.use(doctorsRouter);
 router.use(appointmentsRouter);

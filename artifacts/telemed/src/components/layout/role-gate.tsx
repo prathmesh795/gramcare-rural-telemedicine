@@ -3,8 +3,11 @@ import { Show } from "@clerk/react";
 import { Redirect } from "wouter";
 import { useGetMyProfile } from "@workspace/api-client-react";
 import { Spinner } from "@/components/ui/spinner";
+import { useDemo } from "@/lib/demo";
 
 export function SignedInOnly({ children }: { children: ReactNode }) {
+  const demo = useDemo();
+  if (demo.active) return <>{children}</>;
   return (
     <>
       <Show when="signed-in">{children}</Show>
@@ -22,6 +25,13 @@ export function RoleGate({
   role: "patient" | "doctor";
   children: ReactNode;
 }) {
+  const demo = useDemo();
+  if (demo.active) {
+    if (demo.role !== role) {
+      return <Redirect to={demo.role === "doctor" ? "/doctor" : "/patient"} />;
+    }
+    return <>{children}</>;
+  }
   return (
     <SignedInOnly>
       <RoleCheck role={role}>{children}</RoleCheck>
