@@ -8,6 +8,10 @@ editor. Bilingual (English / हिन्दी), works on slow connections.
 
 ---
 
+## Architecture
+
+![GramCare architecture diagram](docs/architecture.svg)
+
 ## Project Structure
 
 The repo is a **pnpm monorepo** with a clean frontend / backend separation:
