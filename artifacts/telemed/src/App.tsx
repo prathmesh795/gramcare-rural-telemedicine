@@ -56,15 +56,15 @@ function stripBase(path: string): string {
 
 const clerkAppearance = {
   variables: {
-    colorPrimary: "#b35136",
-    colorForeground: "#3d3633",
-    colorMutedForeground: "#6b6159",
+    colorPrimary: "#2563EB",
+    colorForeground: "#111827",
+    colorMutedForeground: "#6b7280",
     colorBackground: "#ffffff",
-    colorInput: "#faf7f3",
-    colorInputForeground: "#3d3633",
+    colorInput: "#f9fafb",
+    colorInputForeground: "#111827",
     colorDanger: "#dc2626",
-    colorNeutral: "#d6c9ba",
-    fontFamily: "'Plus Jakarta Sans', sans-serif",
+    colorNeutral: "#e5e7eb",
+    fontFamily: "'Inter', sans-serif",
     borderRadius: "0.75rem",
   },
   elements: {
